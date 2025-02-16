@@ -139,6 +139,16 @@ def draw_game_over(message):
         text_rect = text.get_rect(center=(250, 280 + i * 60))
         screen.blit(text, text_rect)
 
+def wait_with_exit(timeout):
+    clock = pygame.time.Clock()
+    start = time.time()
+    while time.time() - start < timeout:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+        clock.tick(30)
+
 
 def main():
     print("Full Board (Solution):") # For testing purposes only
@@ -172,14 +182,14 @@ def main():
         if not game_over and check_win():
             draw_game_over("Congratulations!\nYou Win!")
             pygame.display.flip()
-            pygame.time.wait(5000)
+            wait_with_exit(5)
             break
 
         if game_over:
             message = "Game Over!\nToo many mistakes." if mistakes >= max_mistakes else "Congratulations!\nYou Win!"
             draw_game_over(message)
             pygame.display.flip()
-            pygame.time.wait(5000)
+            wait_with_exit(5)
             break
 
         pygame.display.flip()  # Aktualizuje obrazovku
