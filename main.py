@@ -161,8 +161,6 @@ def main():
     while running:
         screen.fill((255, 255, 255))
         draw_grid()
-        draw_selection()
-        draw_numbers()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -177,6 +175,8 @@ def main():
                     else:
                         handle_key(event.key)
 
+        draw_selection()
+        draw_numbers()
         draw_info()
 
         if not game_over and check_win():
