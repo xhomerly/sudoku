@@ -17,7 +17,7 @@ font = pygame.font.SysFont(None, 50)
 timer_font = pygame.font.SysFont(None, 40)
 
 selected_cell = None
-player_board = [list(row) for row in game_board]  # Kopie herní desky pro hráče
+player_board = [list(row) for row in game_board]  # Copy of game board for player
 incorrect_cells = set()
 mistakes = 0
 max_mistakes = 3
@@ -40,7 +40,7 @@ def print_board(board):  # For testing purposes only
 def draw_grid():
     for row in range(10):
         if row % 3 == 0:
-            thickness = 4  # Tlustší čára po každých 3 řádcích
+            thickness = 4  # Thicker line after every 3 rows
         else:
             thickness = 1
         pygame.draw.line(screen, (0, 0, 0),
@@ -217,8 +217,8 @@ def main():
             wait_with_exit(5)
             break
 
-        pygame.display.flip()  # Aktualizuje obrazovku
-        clock.tick(30)  # Omezí smyčku na 30 FPS
+        pygame.display.flip()  # Refreshes window
+        clock.tick(30)  # Sets FPS on 30
 
     pygame.quit()
 
