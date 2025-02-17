@@ -12,6 +12,7 @@ GRID_SIZE = 450
 CELL_SIZE = GRID_SIZE // 9
 OFFSET_X = 25
 OFFSET_Y = 75
+NUMBER_BAR_Y = OFFSET_Y + GRID_SIZE + 10
 font = pygame.font.SysFont(None, 50)
 timer_font = pygame.font.SysFont(None, 40)
 
@@ -22,6 +23,7 @@ mistakes = 0
 max_mistakes = 3
 start_time = time.time()
 game_over = False
+hidden_numbers = set()
 
 
 def print_board(board):  # For testing purposes only
@@ -94,6 +96,26 @@ def draw_game_over(message):
     screen.blit(game_over_text, text_rect)
 
 
+def draw_number_bar():
+    for num in range(1, 10):
+        count = sum(row.count(num) for row in player_board)
+        if count < 9 or num not in hidden_numbers:
+            hidden_numbers.discard(num)  # Reappear if count drops below 9
+            text = font.render(str(num), True, (0, 0, 0))
+            x = OFFSET_X + (num - 1) * (CELL_SIZE + 5)
+            y = NUMBER_BAR_Y
+            screen.blit(text, (x, y))
+
+# Check and hide numbers reached 9 times
+def update_hidden_numbers():
+    for num in range(1, 10):
+        count = sum(row.count(num) for row in player_board)
+        if count >= 9:
+            hidden_numbers.add(num)
+        elif count < 9:
+            hidden_numbers.discard(num)
+
+
 def handle_key(key):
     global mistakes, game_over
     if selected_cell and (pygame.K_1 <= key <= pygame.K_9 or pygame.K_KP1 <= key <= pygame.K_KP9):
@@ -103,6 +125,7 @@ def handle_key(key):
         elif pygame.K_KP1 <= key <= pygame.K_KP9:  # Keypad number keys
             value = key - pygame.K_KP1 + 1
         player_board[row][col] = value
+        update_hidden_numbers()
         if full_board[row][col] != value:
             incorrect_cells.add((row, col))
             mistakes += 1
@@ -160,6 +183,7 @@ def main():
 
     while running:
         screen.fill((255, 255, 255))
+        draw_number_bar()
         draw_grid()
 
         for event in pygame.event.get():
@@ -174,6 +198,7 @@ def main():
                         selected_cell = None
                     else:
                         handle_key(event.key)
+                        update_hidden_numbers()
 
         draw_selection()
         draw_numbers()
