@@ -3,7 +3,7 @@ import time
 from generate_board import generate_sudoku
 
 pygame.init()
-screen = pygame.display.set_mode((500, 600))
+screen = pygame.display.set_mode((500, 640))
 pygame.display.set_caption("Sudoku")
 
 full_board, game_board = generate_sudoku(num_remove=40)
@@ -14,7 +14,8 @@ OFFSET_X = 25
 OFFSET_Y = 75
 NUMBER_BAR_Y = OFFSET_Y + GRID_SIZE + 10
 font = pygame.font.SysFont(None, 50)
-timer_font = pygame.font.SysFont(None, 40)
+timer_font = pygame.font.SysFont(None, 35)
+desc_font = pygame.font.SysFont(None, 30)
 
 selected_cell = None
 player_board = [list(row) for row in game_board]  # Copy of game board for player
@@ -82,7 +83,7 @@ def draw_info():
     mistake_text = timer_font.render(f"Mistakes: {mistakes}/{max_mistakes}", True, (255, 0, 0))
     # Place timer at top-left and mistakes just below it
     screen.blit(timer_text, (20, 10))
-    screen.blit(mistake_text, (20, 50))
+    screen.blit(mistake_text, (20, 42))
 
 
 def draw_game_over(message):
@@ -173,6 +174,20 @@ def wait_with_exit(timeout):
         clock.tick(30)
 
 
+def restart_game():
+    global player_board, incorrect_cells, mistakes, start_time, game_over
+    _, game_board = generate_sudoku(num_remove=40)
+    player_board = [list(row) for row in game_board]
+    incorrect_cells.clear()
+    mistakes, game_over = 0, False
+    start_time = time.time()
+
+
+def draw_controls():
+    controls_text = desc_font.render("Ctrl+R to restart; Ctrl+Q to quit", True, (0, 0, 0))
+    screen.blit(controls_text, (OFFSET_X, OFFSET_Y + GRID_SIZE + 70))
+
+
 def main():
     print("Full Board (Solution):") # For testing purposes only
     print_board(full_board)
@@ -183,6 +198,7 @@ def main():
 
     while running:
         screen.fill((255, 255, 255))
+        draw_controls()
         draw_number_bar()
         draw_grid()
 
@@ -196,6 +212,11 @@ def main():
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         selected_cell = None
+                    elif event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        restart_game()
+                    elif event.key == pygame.K_q and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        pygame.quit()
+                        exit()
                     else:
                         handle_key(event.key)
                         update_hidden_numbers()
